@@ -1,31 +1,36 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-
 class Solution {
 public:
-    int rangeSum(std::vector<int>& nums, int n, int left, int right) {
-        std::vector<int> subarraySums;
-        const int MOD = 1000000007;
+    typedef pair<int, int> P;
+    int M = 1e9+7;
 
-        // Generate all subarray sums using only two loops
-        for (int start = 0; start < n; ++start) {
-            int currentSum = 0;
-            for (int end = start; end < n; ++end) {
-                currentSum += nums[end];
-                subarraySums.push_back(currentSum);
+    int rangeSum(vector<int>& nums, int n, int left, int right) {
+        priority_queue<P, vector<P>, greater<P>> pq;
+        
+        //pair<sum, i> -> (subarray sum, till index i)
+        for (int i = 0; i < n; i++) {
+            pq.push({nums[i], i});
+        }
+
+        int result = 0;
+
+        for (int i = 1; i <= right; i++) {
+            auto p = pq.top();
+            pq.pop();
+
+            // If the current index is greater than or equal to left, add the
+            // value to the answer.
+            if (i >= left) {
+                result = (result + p.first) % M;
+            }
+
+            // If index is less than the last index, increment it and add its
+            // value
+            if (p.second < n - 1) {
+                p.second++;
+                p.first += nums[p.second];
+                pq.push(p);
             }
         }
-
-        // Sort the subarray sums
-        std::sort(subarraySums.begin(), subarraySums.end());
-
-        // Calculate the sum of elements from left to right (1-based index)
-        int sum = 0;
-        for (int i = left - 1; i < right; ++i) {
-            sum = (sum + subarraySums[i]) % MOD;
-        }
-
-        return sum;
+        return result;
     }
 };
