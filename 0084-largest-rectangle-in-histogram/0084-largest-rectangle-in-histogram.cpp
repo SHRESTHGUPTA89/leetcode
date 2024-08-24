@@ -1,34 +1,58 @@
-#include <vector>
-#include <stack>
-
-using namespace std;
-
 class Solution {
 public:
-    int largestRectangleArea(vector<int>& heights) {
-        int n = heights.size();
-        stack<int> st;
-        int maxArea = 0;
+    vector<int> NSR(vector<int>& heights, int n) {
+        stack<pair<int, int>> st;
+        vector<int> nsr(n, n);  // Initialize NSR with 'n' as the default value
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && st.top().first >= heights[i]) {
+                st.pop();
+            }
+
+            if (!st.empty()) {
+                nsr[i] = st.top().second;
+            }
+
+            st.push({heights[i], i});
+        }
+
+        return nsr;
+    }
+
+    vector<int> NSL(vector<int>& heights, int n) {
+        stack<pair<int, int>> st;
+        vector<int> nsl(n, -1);  // Initialize NSL with '-1' as the default value
 
         for (int i = 0; i < n; i++) {
-            // While the current height is less than the height of the bar at the stack's top
-            while (!st.empty() && heights[st.top()] >= heights[i]) {
-                int h = heights[st.top()];
+            while (!st.empty() && st.top().first >= heights[i]) {
                 st.pop();
-                int width = st.empty() ? i : i - st.top() - 1;
-                maxArea = max(maxArea, h * width);
             }
-            st.push(i);
+
+            if (!st.empty()) {
+                nsl[i] = st.top().second;
+            }
+
+            st.push({heights[i], i});
         }
 
-        // After iterating through the array, process any remaining bars in the stack
-        while (!st.empty()) {
-            int h = heights[st.top()];
-            st.pop();
-            int width = st.empty() ? n : n - st.top() - 1;
-            maxArea = max(maxArea, h * width);
+        return nsl;
+    }
+
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+
+        // Get the NSR and NSL for all elements
+        vector<int> nsr = NSR(heights, n);
+        vector<int> nsl = NSL(heights, n);
+
+        int max_area = 0;
+
+        for (int i = 0; i < n; i++) {
+            int width = nsr[i] - nsl[i] - 1;
+            int area = width * heights[i];
+            max_area = max(max_area, area);
         }
 
-        return maxArea;
+        return max_area;
     }
 };
