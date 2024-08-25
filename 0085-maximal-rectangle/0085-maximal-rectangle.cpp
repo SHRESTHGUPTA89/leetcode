@@ -1,35 +1,79 @@
 class Solution {
 public:
-    int maxInHistogram(vector<int>& arr) {
-        int n=arr.size();
-        int maxi=0;
-        stack<int> st;
-        for(int i=0;i<=n;i++){
-            while(!st.empty() && (i==n || arr[st.top()]>=arr[i])){
-                int height=arr[st.top()];
+    vector<int> NSR(vector<int>& heights, int n) {
+        stack<pair<int, int>> st;
+        vector<int> nsr(n, n);  // Initialize NSR with 'n' as the default value
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && st.top().first >= heights[i]) {
                 st.pop();
-                int width;
-                if(st.empty())  width=i;
-                else     width=i-st.top()-1;
-                maxi=max(maxi,(height*width));
             }
-            st.push(i);
+
+            if (!st.empty()) {
+                nsr[i] = st.top().second;
+            }
+
+            st.push({heights[i], i});
         }
-        return maxi;
+
+        return nsr;
     }
-    int maximalRectangle(vector<vector<char>>& mat) {
-        int r=mat.size();
-        if(r==0) return 0;
-        int c=mat[0].size();
-        int maxi=0;
-        vector<int> histo(c,0);
-        for(int i=0;i<r;i++){
-            for(int j=0;j<c;j++){
-                if(mat[i][j]=='1')    histo[j]+=1;
-                else    histo[j]=0;
+
+    vector<int> NSL(vector<int>& heights, int n) {
+        stack<pair<int, int>> st;
+        vector<int> nsl(n, -1);  // Initialize NSL with '-1' as the default value
+
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && st.top().first >= heights[i]) {
+                st.pop();
             }
-            maxi=max(maxi,maxInHistogram(histo));
+
+            if (!st.empty()) {
+                nsl[i] = st.top().second;
+            }
+
+            st.push({heights[i], i});
         }
-        return maxi;
+
+        return nsl;
+    }
+
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+
+        // Get the NSR and NSL for all elements
+        vector<int> nsr = NSR(heights, n);
+        vector<int> nsl = NSL(heights, n);
+
+        int max_area = 0;
+
+        for (int i = 0; i < n; i++) {
+            int width = nsr[i] - nsl[i] - 1;
+            int area = width * heights[i];
+            max_area = max(max_area, area);
+        }
+
+        return max_area;
+    }
+
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if(matrix.empty()) return 0;
+
+        int n = matrix.size();
+        int m = matrix[0].size();
+        vector<int> v(m, 0);
+
+        int mah = 0;
+
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                // Convert the character '0' or '1' to integer 0 or 1 and update the height
+                v[j] = (matrix[i][j] == '0') ? 0 : v[j] + 1;
+            }
+            // Calculate the maximum area in the histogram after each row
+            mah = max(mah, largestRectangleArea(v));
+        }
+
+        return mah;
     }
 };
