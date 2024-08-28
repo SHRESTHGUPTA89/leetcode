@@ -1,40 +1,39 @@
-#include <vector>
-#include <unordered_map>
-#include <queue>
-#include <algorithm>
-
 class Solution {
 public:
-    bool isNStraightHand(std::vector<int>& hand, int groupSize) {
-        if (hand.size() % groupSize != 0) {
-            return false;
-        }
+    bool isNStraightHand(vector<int>& hand, int groupSize) {
+        // Map to store the count of each card value
+        map<int, int> cardCount;
 
-        // Frequency map to count occurrences of each card
-        std::unordered_map<int, int> count;
         for (int card : hand) {
-            count[card]++;
+            cardCount[card]++;
         }
 
-        // Sort the hand to process cards in increasing order
-        std::sort(hand.begin(), hand.end());
+        // Queue to keep track of the number of new groups
+        // starting with each card value
+        queue<int> groupStartQueue;
+        int lastCard = -1, currentOpenGroups = 0;
 
-        // Attempt to form groups
-        for (int card : hand) {
-            if (count[card] == 0) {
-                continue; // Skip if this card has already been used
+        for (auto& entry : cardCount) {
+            int currentCard = entry.first;
+            // Check if there are any discrepancies in the sequence
+            // or more groups are required than available cards
+            if ((currentOpenGroups > 0 && currentCard > lastCard + 1) ||
+                currentOpenGroups > cardCount[currentCard]) {
+                return false;
             }
-
-            // Try to form a group starting with 'card'
-            for (int i = 0; i < groupSize; ++i) {
-                if (count[card + i] == 0) {
-                    return false; // If any card in the group is missing, return false
-                }
-                count[card + i]--; // Decrement the count of each card in the group
+            // Calculate the number of new groups starting
+            // with the current card
+            groupStartQueue.push(cardCount[currentCard] - currentOpenGroups);
+            lastCard = currentCard;
+            currentOpenGroups = cardCount[currentCard];
+            // Maintain the queue size to be equal to groupSize
+            if (groupStartQueue.size() == groupSize) {
+                currentOpenGroups -= groupStartQueue.front();
+                groupStartQueue.pop();
             }
         }
 
-        return true; // All cards have been successfully grouped
+        // All groups should be completed by the end
+        return currentOpenGroups == 0;
     }
 };
-
