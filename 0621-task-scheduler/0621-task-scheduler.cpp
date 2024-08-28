@@ -1,47 +1,50 @@
-//Approach (Heap + Greedy)
-//T.C : O(n)
-//S.C : O(1)
+#include <vector>
+#include <unordered_map>
+#include <queue>
+
 class Solution {
 public:
-    int leastInterval(vector<char>& tasks, int p) {
-        int n = tasks.size();
-        unordered_map<char, int> mp;
-        
-        for(char &ch : tasks) {
-            mp[ch]++;
+    int leastInterval(vector<char>& tasks, int n) {
+        // Step 1: Create a frequency map to count the occurrences of each task
+        unordered_map<char, int> taskCount;
+        for (char task : tasks) {
+            taskCount[task]++;
         }
 
-        priority_queue<int> pq; //max heap
-        //we want to finish the process which is most occurring (having highest frequency)
-        //so that we don't have to finish in the last with p gaps.
-        int time = 0;
-        
-        for(auto &it : mp) {
-            pq.push(it.second);
+        // Step 2: Use a max heap to store the frequencies (max heap prioritizes tasks with higher frequencies)
+        priority_queue<int> maxHeap;
+        for (auto it : taskCount) {
+            maxHeap.push(it.second);
         }
-        
-        while(!pq.empty()) {
+
+        // Step 3: Initialize the time counter
+        int time = 0;
+
+        // Step 4: Process the tasks in cycles of (n + 1)
+        while (!maxHeap.empty()) {
             vector<int> temp;
-            for(int i = 1; i<=p+1; i++) {
-                //filling first p+1 characters
-                if(!pq.empty()) {
-                    temp.push_back(pq.top()-1); //finishing one instance of each process
-                    pq.pop();
+            int cycle = 0;
+
+            for (int i = 0; i <= n; i++) {
+                if (!maxHeap.empty()) {
+                    temp.push_back(maxHeap.top() - 1);
+                    maxHeap.pop();
+                    cycle++;
                 }
             }
-            
-            for(int &freq : temp) {
-                if(freq > 0)
-                    pq.push(freq);
+
+            // Step 5: Push remaining tasks back into the heap
+            for (int count : temp) {
+                if (count > 0) {
+                    maxHeap.push(count);
+                }
             }
-            
-            if(pq.empty()) //all processes finished
-                time += temp.size();
-            else
-                time += (p+1); //we finished p+1 tasks above in the loop
-            
+
+            // Step 6: Add the time required for this cycle to the total time
+            time += maxHeap.empty() ? cycle : n + 1;
         }
-        
+
+        // Step 7: Return the total time
         return time;
     }
 };
