@@ -1,39 +1,40 @@
 #include <vector>
-#include <map>
+#include <unordered_map>
+#include <queue>
 #include <algorithm>
 
 class Solution {
 public:
     bool isNStraightHand(std::vector<int>& hand, int groupSize) {
-        // If the total number of cards is not a multiple of groupSize, we can't divide them into groups.
-        if (hand.size() % groupSize != 0) return false;
+        if (hand.size() % groupSize != 0) {
+            return false;
+        }
 
-        // Use a map to count the frequency of each card.
-        std::map<int, int> count;
+        // Frequency map to count occurrences of each card
+        std::unordered_map<int, int> count;
         for (int card : hand) {
             count[card]++;
         }
 
-        // Iterate through the sorted keys in the map.
-        for (auto it = count.begin(); it != count.end(); ++it) {
-            // The current card value and its count.
-            int card = it->first;
-            int cardCount = it->second;
+        // Sort the hand to process cards in increasing order
+        std::sort(hand.begin(), hand.end());
 
-            // If there are any cards of this value left to process.
-            if (cardCount > 0) {
-                // We need to form groups starting with this card.
-                for (int i = 0; i < groupSize; ++i) {
-                    // Check if the group can be formed.
-                    if (count[card + i] < cardCount) {
-                        return false; // Not enough cards to form a group.
-                    }
-                    // Reduce the count of the card used in forming the group.
-                    count[card + i] -= cardCount;
+        // Attempt to form groups
+        for (int card : hand) {
+            if (count[card] == 0) {
+                continue; // Skip if this card has already been used
+            }
+
+            // Try to form a group starting with 'card'
+            for (int i = 0; i < groupSize; ++i) {
+                if (count[card + i] == 0) {
+                    return false; // If any card in the group is missing, return false
                 }
+                count[card + i]--; // Decrement the count of each card in the group
             }
         }
 
-        return true; // Successfully formed all groups.
+        return true; // All cards have been successfully grouped
     }
 };
+
