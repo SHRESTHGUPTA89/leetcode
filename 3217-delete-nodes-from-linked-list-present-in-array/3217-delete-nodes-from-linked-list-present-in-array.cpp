@@ -10,20 +10,20 @@
  */
 class Solution {
 public:
-    ListNode* modifiedList(vector<int>& nums, ListNode* head) {
-        set<int> s(nums.begin(), nums.end());
-        ListNode ans(0);
-        ans.next = head;
-        ListNode* current = &ans;
-        while (current->next != nullptr) {
-            if (s.find(current->next->val) != s.end()) {
-                current->next = current->next->next;
-            } else {
-                current = current->next;
+    ListNode* modifiedList(vector<int>& v, ListNode* head) {
+        ListNode *d= new ListNode(-1);
+        ListNode *t=d;
+        set<int>s;
+        for(auto i:v)
+            s.insert(i);
+        while(head!=NULL) {
+            if(s.find(head->val)==s.end()) {
+                t->next=head;
+                t=t->next;
             }
+            head=head->next;
         }
-        return ans.next;
+        t->next=NULL;
+        return d->next;
     }
-    // tc - O(l*logn)
-    // sc - O(n)
 };
