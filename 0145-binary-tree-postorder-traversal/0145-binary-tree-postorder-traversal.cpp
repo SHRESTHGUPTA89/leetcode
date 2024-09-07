@@ -11,17 +11,27 @@
  */
 class Solution {
 public:
-    void traverse(TreeNode* root, vector<int>& res){
-        if (root){
-            traverse(root -> left, res);
-            traverse(root -> right, res);
-            res.push_back(root -> val);
+    
+    vector<int>ans;
+    
+    void postOrder(TreeNode * root){
+        
+        if(root==NULL){
+            return;
         }
+        
+        
+        postOrder(root->left);    
+        postOrder(root->right);
+        ans.push_back(root->val);
+        
+        
     }
-
     vector<int> postorderTraversal(TreeNode* root) {
-        vector<int> res;
-        traverse(root, res);
-        return res;
+        
+        postOrder(root);
+        return ans;
+        
     }
 };
+
