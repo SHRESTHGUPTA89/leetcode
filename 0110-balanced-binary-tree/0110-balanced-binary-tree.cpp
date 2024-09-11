@@ -12,23 +12,19 @@
 class Solution {
 public:
     bool isBalanced(TreeNode* root) {
-        // If the tree is empty, we can say it’s balanced...
-        if (root == NULL)  return true;
-        // Height Function will return -1, when it’s an unbalanced tree...
-		if (Height(root) == -1)  return false;
-		return true;
-	}
-    // Create a function to return the “height” of a current subtree using recursion...
-	int Height(TreeNode* root) {
-        // Base case...
-		if (root == NULL)  return 0;
-        // Height of left subtree...
-		int leftHeight = Height(root->left);
-        // Height of height subtree...
-		int rightHight = Height(root->right);
-        // In case of left subtree or right subtree unbalanced or their heights differ by more than ‘1’, return -1...
-		if (leftHeight == -1 || rightHight == -1 || abs(leftHeight - rightHight) > 1)  return -1;
-        // Otherwise, return the height of this subtree as max(leftHeight, rightHight) + 1...
-		return max(leftHeight, rightHight) + 1;
+        
+        return dfsHeight(root) != -1;
+        
+    }
+    
+    int dfsHeight(TreeNode* root){
+        if(root == nullptr) return 0;
+        int leftHeight = dfsHeight(root->left);
+        if(leftHeight == -1) return -1;
+        int rightHeight = dfsHeight(root->right);
+        if(rightHeight == -1) return -1;
+        
+        if(abs(leftHeight - rightHeight) > 1) return -1;
+        return max(leftHeight, rightHeight) +1;
     }
 };
