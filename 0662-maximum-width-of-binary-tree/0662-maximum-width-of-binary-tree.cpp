@@ -1,50 +1,32 @@
-#include <queue>
-#include <utility> // For std::pair
-
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
 class Solution {
 public:
+    typedef unsigned long long ll;
     int widthOfBinaryTree(TreeNode* root) {
-        if (!root) return 0;
-
-        // Queue will store pairs of (node, index)
-        std::queue<std::pair<TreeNode*, unsigned long long>> q;
-        q.push({root, 0});
-        int maxWidth = 0;
-
-        while (!q.empty()) {
-            int levelSize = q.size();
-            unsigned long long start = q.front().second;
-            unsigned long long end = q.back().second;
-
-            maxWidth = std::max(maxWidth, int(end - start + 1));
-
-            for (int i = 0; i < levelSize; i++) {
-                auto [node, index] = q.front();
-                q.pop();
-
-                // Normalize the index by subtracting the start index
-                unsigned long long normalizedIndex = index - start;
-
-                if (node->left) {
-                    q.push({node->left, 2 * normalizedIndex + 1});
+        if(!root)   
+            return 0;
+        queue<pair<TreeNode*, ll>> que;
+        que.push({root, 0});
+        ll maxWidth = 0;
+        
+        while(!que.empty()) {
+            int n = que.size();
+            ll f = que.front().second;
+            ll l = que.back().second;
+            maxWidth = max(maxWidth, l-f+1);
+            
+            while(n--) {
+                TreeNode* curr = que.front().first;
+                ll d          = que.front().second;
+                que.pop();
+                if(curr->left) {
+                    que.push({curr->left, 2*d+1});
                 }
-                if (node->right) {
-                    q.push({node->right, 2 * normalizedIndex + 2});
+                if(curr->right) {
+                    que.push({curr->right, 2*d+2});
                 }
             }
         }
-
         return maxWidth;
     }
 };
+
