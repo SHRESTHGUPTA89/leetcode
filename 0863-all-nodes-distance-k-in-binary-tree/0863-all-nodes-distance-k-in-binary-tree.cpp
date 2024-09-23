@@ -1,62 +1,68 @@
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
-
 class Solution {
 public:
-    // Function to build an undirected graph from the binary tree
-    void buildGraph(TreeNode* cur, TreeNode* parent, unordered_map<int, vector<int>>& graph) {
-        if (cur) {
-            // If there is a parent, create an edge between current node and parent
-            if (parent) {
-                graph[parent->val].push_back(cur->val); // Connect parent to current node
-                graph[cur->val].push_back(parent->val); // Connect current node to parent
-            }
-            // Recursively build the graph for left and right children
-            buildGraph(cur->left, cur, graph);
-            buildGraph(cur->right, cur, graph);
-        }
+    unordered_map<TreeNode*, TreeNode*> parent;
+    void addParent(TreeNode* root) {
+        if(!root)
+            return;
+        
+        if(root->left)
+            parent[root->left] = root;
+        
+        addParent(root->left);
+        
+        if(root->right)
+            parent[root->right] = root;
+        
+        addParent(root->right);
     }
-
-    // Function to find all nodes at distance k from the target node
-    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
-        unordered_map<int, vector<int>> graph; // Adjacency list to represent the graph
-        buildGraph(root, nullptr, graph); // Build the graph from the binary tree
-
-        vector<int> res; // Vector to store the result
-        unordered_set<int> vis; // Set to keep track of visited nodes
-        queue<pair<int, int>> q; // Queue to perform BFS, storing (node, distance)
-
-        // Start BFS from the target node with distance 0
-        q.push({target->val, 0});
-        vis.insert(target->val); // Mark the target node as visited
-
-        // Perform BFS to find all nodes at distance k
-        while (!q.empty()) {
-            int cur = q.front().first; // Current node value
-            int dist = q.front().second; // Current distance from target
-            q.pop(); // Remove the current node from the queue
-
-            // If the current distance equals k, add the node to the result
-            if (dist == k) {
-                res.push_back(cur); // Store the node value in the result
-                continue; // Continue to the next node in the queue
-            }
-
-            // Explore all unvisited neighbors of the current node
-            for (int neigh : graph[cur]) {
-                if (vis.find(neigh) == vis.end()) { // Check if neighbor is not visited
-                    vis.insert(neigh); // Mark neighbor as visited
-                    q.push({neigh, dist + 1}); // Push neighbor with incremented distance
+    
+    void collectKDistanceNodes(TreeNode* target, int k, vector<int>& result) {
+        
+        queue<TreeNode*> que;
+        que.push(target);
+        unordered_set<int> visited;
+        visited.insert(target->val);
+        
+        while(!que.empty()) {
+            
+            int n = que.size();
+            if(k == 0)
+                break;
+            
+            while(n--) {
+                TreeNode* curr = que.front();
+                que.pop();
+                
+                if(curr->left && !visited.count(curr->left->val)) {
+                    que.push(curr->left);
+                    visited.insert(curr->left->val);
+                }
+                if(curr->right && !visited.count(curr->right->val)) {
+                    que.push(curr->right);
+                    visited.insert(curr->right->val);
+                }
+                
+                if(parent.count(curr) && !visited.count(parent[curr]->val)) {
+                    que.push(parent[curr]);
+                    visited.insert(parent[curr]->val);
                 }
             }
+            k--;
         }
-        return res; // Return the list of nodes at distance k
+        
+        while(!que.empty()) {
+            TreeNode* temp = que.front();
+            que.pop();
+            result.push_back(temp->val);
+        }
+    }
+    
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        vector<int> result;
+        
+        addParent(root);
+        
+        collectKDistanceNodes(target, k, result);
+        return result;
     }
 };
