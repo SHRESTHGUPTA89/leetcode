@@ -1,14 +1,21 @@
 class Solution {
 public:
     int integerBreak(int n) {
-        int res = 1;
-        for (int i = 2; i < n; i++) {
-            int div = n / i;
-            int mod = n - i * div;
-            int v = std::pow(div+1, mod) * std::pow(div, i-mod);
-            if (v < res) return res;
-            res = v;
+        // Base cases
+        if (n == 2) return 1;
+        if (n == 3) return 2;
+
+        // General case: break n into as many 3's as possible
+        int product = 1;
+
+        while (n > 4) {
+            product *= 3;
+            n -= 3;
         }
-        return res;
+
+        // Multiply the remaining n, which will be 2, 3, or 4
+        product *= n;
+
+        return product;
     }
 };
