@@ -1,20 +1,30 @@
 class Solution {
 public:
     Node* connect(Node* root) {
-        if(!root) return nullptr;
-        queue<Node*> q;
-        q.push(root);        
-        while(size(q)) {
-            Node* rightNode = nullptr;                    // set rightNode to null initially
-            for(int i = size(q); i; i--) {                // traversing each level
-                auto cur = q.front(); q.pop();            // pop a node from current level and,
-                cur -> next = rightNode;                  // set its next pointer to rightNode
-                rightNode = cur;                          // update rightNode as cur for next iteration
-                if(cur -> right)                          // if a child exists
-                    q.push(cur -> right),                 // IMP: push right first to do right-to-left BFS
-                    q.push(cur -> left);                  // then push left
+        if (root == nullptr) return root;  // Base case: empty tree
+        
+        Node* level_start = root;  // Start from the root (level 0)
+        
+        while (level_start->left != nullptr) {  // While there is a next level
+            Node* current = level_start;  // Iterate over the current level
+            
+            while (current != nullptr) {
+                // Connect the left child to the right child
+                current->left->next = current->right;
+                
+                // Connect the right child to the next node's left child (if exists)
+                if (current->next != nullptr) {
+                    current->right->next = current->next->left;
+                }
+                
+                // Move to the next node in the current level
+                current = current->next;
             }
+            
+            // Move to the next level (leftmost node of the next level)
+            level_start = level_start->left;
         }
+        
         return root;
     }
 };
