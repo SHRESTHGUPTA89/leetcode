@@ -1,34 +1,55 @@
+//Approach (Using Array + Lazy Propagation)
+//T.C : push : O(1), pop : O(1), increment : O(1)
+//S.C : O(maxSize)
 class CustomStack {
-private:
-    // Vector to store stack elements
-    vector<int> stackVector;
-
-    // Index of the top element in the stack
-    int topIndex;
-
 public:
+    vector<int> st;
+    vector<int> increments;
+    int n;
+
     CustomStack(int maxSize) {
-        stackVector.resize(maxSize);
-        topIndex = -1;
+        n = maxSize;
     }
-
+    
     void push(int x) {
-        if (topIndex < (int)(stackVector.size()) - 1) {
-            stackVector[++topIndex] = x;
+        if(st.size() < n) {
+            st.push_back(x);
+            increments.push_back(0);
         }
     }
-
+    
     int pop() {
-        if (topIndex >= 0) {
-            return stackVector[topIndex--];
+        if(st.size() == 0) {
+            return -1;
         }
-        return -1;  // Return -1 if the stack is empty
-    }
 
+        int idx = st.size()-1; //top element index
+        
+        if(idx > 0) {
+            increments[idx-1] += increments[idx];
+        }
+
+        int top_val = st[idx] + increments[idx];
+        st.pop_back();
+        increments.pop_back();
+        
+        return top_val;
+    }
+    
     void increment(int k, int val) {
-        int limit = min(k, topIndex + 1);
-        for (int i = 0; i < limit; i++) {
-            stackVector[i] += val;
+        //Note that input might contain K which is greater than st.size()
+        int idx = min(k, (int)st.size()) - 1;
+        if (idx >= 0) {
+            increments[idx] += val;
         }
     }
 };
+
+
+/**
+ * Your CustomStack object will be instantiated and called as such:
+ * CustomStack* obj = new CustomStack(maxSize);
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * obj->increment(k,val);
+ */
