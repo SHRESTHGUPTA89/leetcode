@@ -15,7 +15,7 @@ public:
             return false; // Elements divisible by k should be in pairs
         }
 
-        for (int i = 1; i < k; i++) {
+        for (int i = 1; i <= k/2; i++) {
             if (remainderCount[i] != remainderCount[k - i]) {
                 return false; // The count of remainders i and k-i should match
             }
