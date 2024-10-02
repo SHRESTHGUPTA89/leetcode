@@ -1,31 +1,37 @@
+//T.C : O(n) - We visit each character only once (Note that an element once popped from result is never put back)
+//S.C : O(1)
 class Solution {
 public:
     string removeDuplicateLetters(string s) {
-        vector<int> lastIndex(26, 0);
-        for (int i = 0; i < s.length(); i++){
-            lastIndex[s[i] - 'a'] = i; // track the lastIndex of character presence
+        int n = s.length();
+        string result;
+        
+        vector<bool> taken(26, false); //O(1) space
+        vector<int> lastIndex(26); //O(1) space
+        
+        for(int i = 0; i < n; i++) {
+            char ch = s[i];
+            
+            lastIndex[ch-'a'] = i;
         }
         
-        vector<bool> seen(26, false); // keep track seen
-        stack<char> st;
         
-        for (int i = 0; i < s.size(); i++) {
-            int curr = s[i] - 'a';
-            if (seen[curr]) continue; // if seen continue as we need to pick one char only
-            while(st.size() > 0 && st.top() > s[i] && i < lastIndex[st.top() - 'a']){
-                seen[st.top() - 'a'] = false; // pop out and mark unseen
-                st.pop();
+        for(int i = 0; i < n; i++) {
+            
+            int idx = s[i] - 'a';
+            
+            if(taken[idx] == true) continue;
+            
+            while(result.length() > 0 && s[i] < result.back() && lastIndex[result.back() - 'a'] > i) {
+                taken[result.back() - 'a'] = false;
+                result.pop_back();
             }
-            st.push(s[i]); // add into stack
-            seen[curr] = true; // mark seen
+            
+            result.push_back(s[i]);
+            taken[idx] = true;
+            
         }
         
-        string ans = "";
-        while (st.size() > 0){
-            ans += st.top();
-            st.pop();
-        }
-        reverse(ans.begin(), ans.end());
-        return ans;
+        return result;
     }
 };
