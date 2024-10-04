@@ -1,38 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+//T.C : O(n)
+//S.C : O(1) - Not including result array
 class Solution {
 public:
     vector<int> inorderTraversal(TreeNode* root) {
         vector<int> result;
-        TreeNode* current = root;
-        
-        while (current != nullptr) {
-            if (current->left == nullptr) {
-                // No left subtree, visit the current node
-                result.push_back(current->val);
-                // Move to the right subtree
-                current = current->right;
+        TreeNode* curr = root;
+        TreeNode* pre;
+
+        while (curr != nullptr) {
+            if (curr->left == nullptr) {
+                result.push_back(curr->val);
+                curr = curr->right;
             } else {
-                // Find the predecessor (rightmost node in the left subtree)
-                TreeNode* predecessor = current->left;
-                while (predecessor->right != nullptr && predecessor->right != current) {
-                    predecessor = predecessor->right;
+                pre = curr->left;
+                
+                while (pre->right != nullptr) {
+                    pre = pre->right;
                 }
                 
-                // Create a temporary link from predecessor to current
-                if (predecessor->right == nullptr) {
-                    predecessor->right = current;
-                    // Move to the left subtree
-                    current = current->left;
-                } 
-                // Revert the changes (remove temporary link) and visit current node
-                else {
-                    predecessor->right = nullptr;
-                    result.push_back(current->val);
-                    // Move to the right subtree
-                    current = current->right;
-                }
+                pre->right = curr;
+                TreeNode* temp = curr;
+                curr = curr->left;
+                temp->left = nullptr;
             }
         }
-        
+
         return result;
     }
 };
