@@ -12,21 +12,30 @@
 class Solution {
 public:
     TreeNode* insertIntoBST(TreeNode* root, int val) {
-        // If the root is null, create a new node and return it as the root
-        if (root == nullptr) {
-            return new TreeNode(val);
-        }
         
-        // Traverse the tree to find the correct position
-        if (val < root->val) {
-            // Insert into the left subtree
-            root->left = insertIntoBST(root->left, val);
-        } else {
-            // Insert into the right subtree
-            root->right = insertIntoBST(root->right, val);
-        }
+        if(root == NULL) return new TreeNode(val);
+        TreeNode *cur=root;
         
-        // Return the unchanged root
+        while(true){
+            
+            if(cur->val <= val){
+                if(cur->right != NULL) cur = cur->right;
+                else{
+                    cur->right = new TreeNode(val);
+                    break;
+                }
+                
+            }
+            else{
+                if(cur->left != NULL) cur = cur->left;
+                else{
+                    cur->left=new TreeNode(val);
+                    break;
+                }
+            }
+            
+        }
         return root;
+        
     }
 };
