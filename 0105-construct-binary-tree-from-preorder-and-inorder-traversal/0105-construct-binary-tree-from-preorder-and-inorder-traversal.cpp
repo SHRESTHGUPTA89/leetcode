@@ -33,7 +33,7 @@ public:
     }
     
     TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        int n = preorder.size();
+        int n = inorder.size();
         
         int idx = 0;
         
