@@ -8,23 +8,20 @@
  * };
  */
 
-
-
 class Solution {
 public:
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        if(!root)
-            return NULL;
         
-        if(root->val == p->val || root->val == q->val)
-            return root;
+        if(root == NULL) return NULL;
+        int curr=root->val;
+        if(curr < p->val && curr < q->val){
+            return lowestCommonAncestor(root->right , p, q);
+        }
+        if(curr > p->val && curr > q->val){
+            return lowestCommonAncestor(root->left,p,q);
+        }
         
-        TreeNode* l = lowestCommonAncestor(root->left, p, q);
-        TreeNode* r = lowestCommonAncestor(root->right, p, q);
+        return root;
         
-        if(l && r)
-            return root;
-        
-        return l?l:r;
     }
 };
