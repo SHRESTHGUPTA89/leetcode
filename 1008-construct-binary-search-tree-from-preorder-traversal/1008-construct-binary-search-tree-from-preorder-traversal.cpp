@@ -1,26 +1,53 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
 class Solution {
 public:
-    // Helper function to construct BST recursively
-    TreeNode* constructBST(vector<int>& preorder, int& index, int bound) {
-        // If all elements are processed or the current value exceeds the bound, return NULL
-        if (index == preorder.size() || preorder[index] > bound) {
-            return nullptr;
+    
+      TreeNode* solve(vector<int>& preorder, vector<int>& inorder, int start, int end, int& idx) {
+        if(start > end)
+            return NULL;
+        
+        int rootVal = preorder[idx];
+        int i = start;
+        
+        for(; i <= end; i++) {
+            if(inorder[i] == rootVal)
+                break;
         }
         
-        // Create the current node with the value at 'index'
-        TreeNode* root = new TreeNode(preorder[index++]);
-        
-        // Recursively build the left subtree, setting the bound to the root's value
-        root->left = constructBST(preorder, index, root->val);
-        
-        // Recursively build the right subtree, keeping the bound the same
-        root->right = constructBST(preorder, index, bound);
+        idx++;
+        TreeNode* root = new TreeNode(rootVal);
+        root->left  = solve(preorder, inorder, start, i-1, idx);
+        root->right = solve(preorder, inorder, i+1, end, idx);
         
         return root;
     }
-    
     TreeNode* bstFromPreorder(vector<int>& preorder) {
-        int index = 0;
-        return constructBST(preorder, index, INT_MAX);
+        
+        vector<int>inorder = preorder;
+        
+        sort(inorder.begin(),inorder.end());
+        
+        int n = inorder.size();
+          int idx = 0;
+        
+        
+        return solve(preorder, inorder, 0, n-1, idx);
     }
 };
+
+
+
+        
+        
+      
+    
