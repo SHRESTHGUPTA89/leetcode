@@ -7,7 +7,7 @@ public:
         for(int i=0;i<n;i++){
             s.push_back(s[i]);
             if(s.substr(i+1)==goal) return true;
-            cout<<s.substr(i+1)<<endl;
+            
         }
         return s.substr(ans)==goal;
     }
