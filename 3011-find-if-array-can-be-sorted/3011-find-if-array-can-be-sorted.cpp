@@ -1,27 +1,35 @@
 class Solution {
 public:
     bool canSortArray(vector<int>& nums) {
-        int n = nums.size();
+        //Current Segment
+        int numOfSetBits = __builtin_popcount(nums[0]);
+        int maxOfSegment = nums[0];
+        int minOfSegment = nums[0];
 
-        // Avoid modifying the input directly
-        // Create a copy of the input array
-        vector<int> values = nums;
+        int maxOfPrevSegment = INT_MIN;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (values[j] <= values[j + 1]) {
-                    // No swap needed
-                    continue;
-                } else {
-                    if (__builtin_popcount(nums[j]) ==
-                        __builtin_popcount(nums[j + 1])) {
-                        // Swap the elements
-                        swap(values[j], values[j + 1]);
-                    } else {
-                        return false;
-                    }
+        for (int i = 1; i < nums.size(); i++) {
+            if (__builtin_popcount(nums[i]) == numOfSetBits) { //they belong to same segment
+                maxOfSegment = max(maxOfSegment, nums[i]); //find max of current segment
+                minOfSegment = min(minOfSegment, nums[i]); //find min of current segment
+            } else {  // Element belongs to a new segment
+                
+                if (minOfSegment < maxOfPrevSegment) { //ye bataya hai maine video me
+                    return false;
                 }
+
+                // Update the previous segment's max
+                maxOfPrevSegment = maxOfSegment;
+
+                // new segment started now
+                maxOfSegment = nums[i];
+                minOfSegment = nums[i];
+                numOfSetBits = __builtin_popcount(nums[i]);
             }
+        }
+        // Final check for proper segment arrangement
+        if (minOfSegment < maxOfPrevSegment) {
+            return false;
         }
         return true;
     }
