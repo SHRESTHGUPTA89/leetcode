@@ -1,17 +1,23 @@
+
 class Solution {
 public:
+    int solve(int i,int bit,vector<int> &candidates,vector<vector<int>> &dp){
+        if(i == candidates.size()) return 0;
+        if(dp[i][bit] != -1) return dp[i][bit];
+
+        int take = 0;
+        int setbit = 1<<bit & candidates[i];
+        if(setbit) take = 1 + solve(i+1,bit,candidates,dp);
+        int skip = solve(i+1,bit,candidates,dp);
+        return dp[i][bit] = max(take,skip);
+    }
     int largestCombination(vector<int>& candidates) {
-        // Initialize a vector to store the count of each bit position.
-        vector<int> bitCount(24, 0);
-        for (int i = 0; i < 24; i++) {
-            for (int num : candidates) {
-                // Check if the i-th bit is set.
-                if ((num & (1 << i)) != 0) {
-                    bitCount[i]++;
-                }
-            }
+        int ans = 1;
+        int n = candidates.size();
+        vector<vector<int>> dp(n+1,vector<int>(24,-1));
+        for(int i = 0;i<24;i++){
+            ans = max(ans,solve(0,i,candidates,dp));
         }
-        // Return the maximum count.
-        return *max_element(bitCount.begin(), bitCount.end());
+        return ans;
     }
 };
