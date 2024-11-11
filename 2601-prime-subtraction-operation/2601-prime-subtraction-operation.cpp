@@ -1,44 +1,54 @@
 class Solution {
 public:
-    bool checkPrime(int x) {
-        for (int i = 2; i <= sqrt(x); i++) {
-            if (x % i == 0) {
-                return 0;
+    bool isPrime[1000];
+
+    void sieve() { //O(1)
+        fill(isPrime, isPrime+1000, true); //initiliase the array ith all True
+        isPrime[0] = false; //0 is not a prime number
+        isPrime[1] = false; //1 is not a prime number
+        
+        for(int i = 2; i * i < 1000; i++) {
+            if(isPrime[i] == true) {
+                for(int j = i*i; j < 1000; j += i) {
+                    isPrime[j] = false;
+                }
             }
         }
-        return 1;
     }
+
     bool primeSubOperation(vector<int>& nums) {
-        for (int i = 0; i < nums.size(); i++) {
-            int bound;
-            // In case of first index, we need to find the largest prime less
-            // than nums[0].
-            if (i == 0) {
-                bound = nums[0];
-            } else {
-                // Otherwise, we need to find the largest prime, that makes the
-                // current element closest to the previous element.
-                bound = nums[i] - nums[i - 1];
+        int n = nums.size();
+
+        sieve(); //it will populate my isPrime array //O(1)
+        //isPrime[i] == true means, i is a prime number else i is no a prime number
+
+
+        //O(n * maxNum)
+        for(int i = n-2; i >= 0; i--) { //O(n)
+            if(nums[i] < nums[i+1]) {
+                continue;
             }
 
-            // If the bound is less than or equal to 0, then the array cannot be
-            // made strictly increasing.
-            if (bound <= 0) {
-                return 0;
-            }
+            //nums[i] >= nums[i+1]
+            //decrease nums[i] atleast less than nums[i+1]
 
-            // Find the largest prime less than bound.
-            int largestPrime = 0;
-            for (int j = bound - 1; j >= 2; j--) {
-                if (checkPrime(j)) {
-                    largestPrime = j;
+            //check prime numbers less than nums[i]
+            for(int p = 2; p < nums[i]; p++) { //O(max of nums)
+                if(!isPrime[p]) {
+                    continue;
+                }
+
+                if(nums[i] - p < nums[i+1]) {
+                    nums[i] -= p;
                     break;
                 }
             }
 
-            // Subtract this value from nums[i].
-            nums[i] = nums[i] - largestPrime;
+            if(nums[i] >= nums[i+1]) {
+                return false;
+            }
         }
-        return 1;
+
+        return true;
     }
 };
