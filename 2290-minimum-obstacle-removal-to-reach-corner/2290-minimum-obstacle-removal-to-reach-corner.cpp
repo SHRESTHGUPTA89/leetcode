@@ -47,7 +47,7 @@ public:
             }
         }
 
-        return minObstacles[m - 1][n - 2];
+        return minObstacles[m - 1][n - 1];
     }
 
     
