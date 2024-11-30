@@ -1,21 +1,33 @@
 class Solution {
 public:
-    bool canJump(vector<int>& nums) {
-        
-   //      greedy method
-        
-        // hum loog end ko laga taar last se first move kar rahe for detail watch nikhal lohia
-        int n=nums.size();
-        int start=0;
-        int end=n-1;
-        
-        
-        for(int i=n-2;i>=0;i--){
-            if(nums[i]>=end-i){
-                end=i;
+    bool canJumpFrom(int index, vector<int>& nums, vector<int>& memo) {
+        // Base case: If we reach or exceed the last index, return true
+        if (index >= nums.size() - 1) {
+            return true;
+        }
+
+        // If the result for this index is already computed, return it
+        if (memo[index] != -1) {
+            return memo[index];
+        }
+
+        // Calculate the maximum jump we can make from the current index
+        int maxJump = nums[index];
+        for (int jump = 1; jump <= maxJump; ++jump) {
+            // Check recursively if we can reach the end from the new position
+            if (canJumpFrom(index + jump, nums, memo)) {
+                return memo[index] = true; // Store result and return
             }
         }
-        
-        return end==0;
+
+        // If no jumps lead to the end, store and return false
+        return memo[index] = false;
+    }
+
+    bool canJump(vector<int>& nums) {
+        int n = nums.size();
+        // Initialize memoization table with -1 (uncomputed)
+        vector<int> memo(n, -1);
+        return canJumpFrom(0, nums, memo);
     }
 };
