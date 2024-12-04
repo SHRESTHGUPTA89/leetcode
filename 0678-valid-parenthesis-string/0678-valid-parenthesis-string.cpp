@@ -1,39 +1,43 @@
-//Approach-3 (Using two Stacks) - No DP required
+//Approach-4 (Constant Space)
 //T.C : O(n)
-//S.C : O(n)
+//S.C :O(1)
+//NOTE : You can easily combine both for loops in just a single for loop. I have written them separately for sake of simplicity and understanding
 class Solution {
-public: 
+public:
     bool checkValidString(string s) {
-        stack<int> openSt;
-        stack<int> asterisksSt;
+        int open = 0;
+        int close = 0;
+        int n = s.length();
+        
+        //Left to Right - Check Open Brackets
+        for (int i = 0; i < n; i++) {
 
-        for (int i = 0; i < s.length(); i++) {
-            char ch = s[i];
-
-            if (ch == '(') {
-                openSt.push(i);
-            } else if (ch == '*') {
-                asterisksSt.push(i);
+            if (s[i] == '(' || s[i] == '*') {
+                open++;
             } else {
-                if (!openSt.empty()) {
-                    openSt.pop();
-                } else if (!asterisksSt.empty()) {
-                    asterisksSt.pop();
-                } else {
-                    return false;
-                }
+                open--;
             }
-        }
-
-        //This post processing will be required for cases like - "*(())(*"
-        while (!openSt.empty() && !asterisksSt.empty()) {
-            if (openSt.top() > asterisksSt.top()) {
+                
+            if (open < 0) {
                 return false;
             }
-            openSt.pop();
-            asterisksSt.pop();
         }
 
-        return openSt.empty();
+        //Right to Left - Check CLose Brackets
+        for (int i = n - 1; i >= 0; i--) {
+            
+            if (s[i] == ')' || s[i] == '*') {
+                close++;
+            } else {
+                close--;
+            }
+            
+            
+            if (close < 0) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 };
