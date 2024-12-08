@@ -1,26 +1,51 @@
 class Solution {
 public:
-    int maxTwoEvents(vector<vector<int>>& events) {
-        sort(events.begin(), events.end()); // Sort events by start time
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
-        int maxVal = 0, ans = 0;
+    int n;
+    int t[100001][3];
+    
+    //upper_bound of endTime
+    int binarySearch(vector<vector<int>>& events, int endTime) {
+        int l = 0;
+        int r = n-1;
+        int result = n;
 
-        for (auto& event : events) {
-            int start = event[0], end = event[1], value = event[2];
+        while(l <= r) {
+            int mid = l + (r-l)/2;
 
-            // Remove events that end before the current event's start time
-            while (!pq.empty() && pq.top().first < start) {
-                maxVal = max(maxVal, pq.top().second);
-                pq.pop();
+            if(events[mid][0] > endTime) {
+                result = mid;
+                r = mid-1;
+            } else {
+                l = mid+1;
             }
-
-            // Update the maximum sum of values
-            ans = max(ans, maxVal + value);
-
-            // Add the current event to the priority queue
-            pq.push({end, value});
         }
 
-        return ans;
+        return result;
+    }
+
+    int solve(vector<vector<int>>& events, int i, int count) {
+        if(count == 2 || i >= n) {
+            return 0;
+        }
+
+        if(t[i][count] != -1) {
+            return t[i][count];
+        }
+
+        int nextValidEventIndex = binarySearch(events, events[i][1]);
+        int take = events[i][2] + solve(events, nextValidEventIndex, count+1);
+
+        int not_take = solve(events, i+1, count);
+
+        return t[i][count] = max(take, not_take);
+    }
+
+    int maxTwoEvents(vector<vector<int>>& events) {
+        n = events.size();
+        sort(begin(events), end(events));
+        memset(t, -1, sizeof(t));
+
+        int count = 0;
+        return solve(events, 0, count);
     }
 };
