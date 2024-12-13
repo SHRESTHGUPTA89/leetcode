@@ -1,27 +1,34 @@
+
+//Approach-1 (Sorting array with indices)
+//T.C : O(nlogn)
+//S.C : O(n)
 class Solution {
 public:
     long long findScore(vector<int>& nums) {
-        long long score = 0;
-        
-        map<int, vector<int>> valueToIndices;
-        for (int i = 0; i < nums.size(); i++) {
-            valueToIndices[nums[i]].push_back(i);
+        int n = nums.size();
+        vector<pair<int, int>> vec(n);
+
+        for(int i = 0; i < n; i++) {
+            vec[i] = {nums[i], i};
         }
 
-        
-        vector<bool> visited(nums.size(), false);
+        sort(begin(vec), end(vec)); //O(nlogn)
 
-        
-        for (const auto& [value, indices] : valueToIndices) {
-            for (int index : indices) {
-                if (!visited[index]) {
-                    // Add to score and mark this element and neighbors as visited
-                    score += value;
-                    visited[index] = true;
+        long long score = 0;
+        vector<bool> visited(n, false);
 
-                    // Mark neighbors
-                    if (index > 0) visited[index - 1] = true;
-                    if (index < nums.size() - 1) visited[index + 1] = true;
+        for(int i = 0; i < n; i++) { //O(n)
+            int element = vec[i].first;
+            int idx     = vec[i].second;
+            if(visited[idx] == false) {
+                visited[idx] = true;
+                score += element;
+
+                if(idx-1 >= 0 && visited[idx-1] == false) {
+                    visited[idx-1] = true;
+                }
+                if(idx+1 < n && visited[idx+1] == false) {
+                    visited[idx+1] = true;
                 }
             }
         }
