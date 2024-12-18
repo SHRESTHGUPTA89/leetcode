@@ -2,20 +2,16 @@ class Solution {
 public:
     vector<int> finalPrices(vector<int>& prices) {
         int n = prices.size();
-        vector<int> ans(n); 
+        vector<int> ans(prices); // Initialize `ans` with original prices
+        stack<int> st;           // Monotonic decreasing stack to store indices
 
         for (int i = 0; i < n; i++) {
-            int discount = 0;
-
-            
-            for (int j = i + 1; j < n; j++) {
-                if (prices[j] <= prices[i]) {
-                    discount = prices[j];
-                    break; // Stop after finding the first discount
-                }
+            // Check for a discount for indices in the stack
+            while (!st.empty() && prices[st.top()] >= prices[i]) {
+                ans[st.top()] -= prices[i]; // Apply discount
+                st.pop();                   // Remove index after applying discount
             }
-
-            ans[i] = prices[i] - discount;
+            st.push(i); // Push the current index onto the stack
         }
 
         return ans;
